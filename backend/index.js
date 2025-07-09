@@ -138,6 +138,7 @@ app.put("/updateTechnicians/:name", technicianController.updateTechnician);
 app.delete("/deleteTechnicians/:name", technicianController.deleteTechnician);
 
 const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+ 
+module.exports = app;
+ 
+module.exports.handler = serverless(app);
