@@ -128,7 +128,7 @@ app.put("/updateCustomer/:name", customerControllers.updateCustomer);
 app.delete("/deleteCustomer/:name", customerControllers.deleteCustomer);
 
 const requestControllers = require("./controllers/request.controllers");
-app.post("/api/request-service", requestControllers.createRequest);
+app.post("/api/request-service", auth, requestControllers.createRequest);
 
 const technicianController = require("./controllers/technicians.controllers");
 app.post("/technicianSignUp", technicianController.createTechnician);
