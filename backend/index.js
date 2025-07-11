@@ -12,9 +12,9 @@ const path = require("path");
 
 app.use(
   cors({
-    origin: "https://techlink-website.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
+    origin: "https://techlink-website.vercel.app", // your frontend
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
