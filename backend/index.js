@@ -10,8 +10,14 @@ const Customer = require("./models/customer.model");
 const Technician = require("./models/technicians.model");
 const path = require("path");
 
+app.use(
+  cors({
+    origin: "https://techlink-website.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
-app.use(cors());
 app.use(express.json());
 
 // MongoDB connection
@@ -53,13 +59,10 @@ app.post("/login", async (req, res) => {
       expiresIn: "1d",
     });
 
-   
+    const userObj = user.toObject();
+    delete userObj.password;
 
-const userObj = user.toObject();
-delete userObj.password;
-
-res.json({ token, user: userObj });
-
+    res.json({ token, user: userObj });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -67,8 +70,6 @@ res.json({ token, user: userObj });
 });
 
 //=====profile section=====///
-
-
 
 // Image storage setup
 const storage = multer.diskStorage({
@@ -117,8 +118,6 @@ app.post(
   }
 );
 
-
-
 // Routes
 const customerControllers = require("./controllers/customer.controller");
 app.post("/customerSignUp", customerControllers.createCustomer);
@@ -138,7 +137,6 @@ app.put("/updateTechnicians/:name", technicianController.updateTechnician);
 app.delete("/deleteTechnicians/:name", technicianController.deleteTechnician);
 
 const PORT = process.env.PORT || 3000;
- app.listen(PORT, () => {
-  console.log('Server running on port ${PORT}');
- });
-
+app.listen(PORT, () => {
+  console.log("Server running on port ${PORT}");
+});
