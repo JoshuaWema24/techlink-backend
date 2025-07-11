@@ -137,8 +137,8 @@ app.get("/getTechnician/:name", technicianController.getTechnician);
 app.put("/updateTechnicians/:name", technicianController.updateTechnician);
 app.delete("/deleteTechnicians/:name", technicianController.deleteTechnician);
 
-const PORT = 3000;
- 
-module.exports = app;
- 
-module.exports.handler = serverless(app);
+const PORT = process.env.PORT || 3000;
+ app.listen(PORT, () => {
+  console.log('Server running on port ${PORT}');
+ });
+
