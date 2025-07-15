@@ -41,17 +41,22 @@ exports.getRequest = async (req, res) => {
   }
 };
 // Get all requests for a specific customer
+
 exports.getRequestsByUser = async (req, res) => {
   try {
-    const { customerId } = req.params;
+    const userId = req.user.id; // comes from the decoded token
+    const requests = await Request.find({
+      customerId: new mongoose.Types.ObjectId(userId),
+    }).sort({ createdAt: -1 });
 
-    const userRequests = await Request.find({ customerId }).sort({ createdAt: -1 });
-
-    res.status(200).json(userRequests);
+    console.log("Found", requests.length, "requests for", userId);
+    res.status(200).json(requests);
   } catch (error) {
+    console.error("Error fetching user requests:", error);
     res.status(400).json({ message: "Error fetching user requests", error });
   }
 };
+
 
 
 // Read all requests
