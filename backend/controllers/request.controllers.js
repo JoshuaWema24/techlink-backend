@@ -8,6 +8,9 @@ exports.createRequest = async (req, res) => {
   try {
     const customerId = req.user.id;
     const { requestId, serviceType, urgency, description, location, time } = req.body;
+     console.log("Creating request for:", customerId);
+    console.log("Request body:", req.body);
+
     const newRequest = new Request({
       customerId, 
       requestId,
