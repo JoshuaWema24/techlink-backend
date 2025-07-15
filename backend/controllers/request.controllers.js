@@ -41,7 +41,7 @@ exports.getRequestsByUser = async (req, res) => {
   try {
     const { customerId } = req.params;
 
-    const userRequests = await Request.find({ userId }).sort({ createdAt: -1 });
+    const userRequests = await Request.find({ customerId }).sort({ createdAt: -1 });
 
     res.status(200).json(userRequests);
   } catch (error) {
