@@ -6,8 +6,7 @@ const Request = require("../models/requests.model");
 // Create request
 exports.createRequest = async (req, res) => {
   try {
-    const customerId = req.user.id;
-    const {  requestId, serviceType, urgency, description, location, time } = req.body;
+    const {  customerId, requestId, serviceType, urgency, description, location, time } = req.body;
     const newRequest = new Request({
       customerId, 
       requestId,
