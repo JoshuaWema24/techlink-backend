@@ -32,6 +32,24 @@ exports.createJob = async (req, res) => {
     res.status(400).json({ message: "Server Error" });
   }
 };
+
+
+
+exports.getJob = async (req, res) => {
+  try {
+    const jobId = req.params.id; 
+    
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found.' });
+    }
+    res.status(200).json(job);
+
+  } catch (error) {
+    console.error('Server error while fetching job:', error); 
+    res.status(500).json({ message: 'Server error. Could not retrieve job details.' });
+  }
+};
  
 
 

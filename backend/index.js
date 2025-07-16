@@ -119,6 +119,7 @@ app.post(
 );
 
 // Routes
+// customer routes
 const customerControllers = require("./controllers/customer.controller");
 app.post("/customerSignUp", customerControllers.createCustomer);
 app.get("/getCustomers", customerControllers.getCustomers);
@@ -126,10 +127,12 @@ app.get("/getCustomer/:name", customerControllers.getCustomer);
 app.put("/updateCustomer/:name", customerControllers.updateCustomer);
 app.delete("/deleteCustomer/:name", customerControllers.deleteCustomer);
 
+//request route
 const requestControllers = require("./controllers/request.controllers");
 app.post("/api/request-service", auth, requestControllers.createRequest);
 app.get("/api/my-requests", auth, requestControllers.getRequestsByUser);
 
+//technicians route
 const technicianController = require("./controllers/technicians.controllers");
 app.post("/technicianSignUp", technicianController.createTechnician);
 app.get("/getTechnicians", technicianController.getTechnicians);
@@ -137,6 +140,13 @@ app.get("/getTechnician/:name", technicianController.getTechnician);
 app.put("/updateTechnicians/:name", technicianController.updateTechnician);
 app.delete("/deleteTechnicians/:name", technicianController.deleteTechnician);
 
+// job routes
+const jobControllers = require("./controllers/jobs.controllers");
+app.post("/api/createJob", auth, jobControllers.createJob);
+app.get("api/getJob", jobControllers.getJob);
+
+
+//app 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port ${PORT}");

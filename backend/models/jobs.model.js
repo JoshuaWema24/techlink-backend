@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 
 const jobsSchema = new mongoose.Schema = {
+   
     serviceType: {
         type: String,
         required: true
