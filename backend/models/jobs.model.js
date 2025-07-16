@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const express = require('express');
 
-const jobsSchema = new mongoose.Schema = {
+const jobsSchema = new mongoose.Schema({
    
     serviceType: {
         type: String,
@@ -32,6 +32,6 @@ const jobsSchema = new mongoose.Schema = {
         type: String,
         required: true
     }
-};
+});
 
 exports.Jobs = mongoose.model('jobs', jobsSchema);
