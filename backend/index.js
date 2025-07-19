@@ -9,10 +9,9 @@ const auth = require("./middleware/auth");
 const Customer = require("./models/customer.model");
 const Technician = require("./models/technicians.model");
 const path = require("path");
-
 app.use(
   cors({
-    origin: "https://techlink-website.vercel.app", // your frontend
+    origin: ["https://techlink-website.vercel.app", "https://developer.safaricom.co.ke"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
