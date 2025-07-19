@@ -11,7 +11,10 @@ const Technician = require("./models/technicians.model");
 const path = require("path");
 app.use(
   cors({
-    origin: ["https://techlink-website.vercel.app", "https://developer.safaricom.co.ke"],
+    origin: [
+      "https://techlink-website.vercel.app",
+      "https://developer.safaricom.co.ke",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -146,10 +149,10 @@ app.get("api/getJob", jobControllers.getJob);
 
 //mpesa route
 const mpesaController = require("./controllers/mpesa.controller");
-app.post('/stkpush', mpesaController.stkPush);
-app.post('/api/mpesa/callback', mpesaController.stkCallback);
+app.post("/stkpush", mpesaController.stkPush);
+app.post("/api/mpesa/callback", mpesaController.stkCallback);
 
-//app 
+//app
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port ${PORT}");

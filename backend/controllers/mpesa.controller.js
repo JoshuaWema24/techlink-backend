@@ -2,8 +2,11 @@ const axios = require("axios");
 const moment = require("moment");
 
 const getAccessToken = async () => {
-  const url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
-  const auth = Buffer.from(`${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRET}`).toString("base64");
+  const url =
+    "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
+  const auth = Buffer.from(
+    `${process.env.MPESA_CONSUMER_KEY}:${process.env.MPESA_CONSUMER_SECRET}`
+  ).toString("base64");
 
   const res = await axios.get(url, {
     headers: {
@@ -52,7 +55,12 @@ exports.stkPush = async (req, res) => {
     res.status(200).json({ message: "Prompt sent", data: mpesaRes.data });
   } catch (error) {
     console.error(error.response?.data || error.message);
-    res.status(500).json({ message: "M-Pesa STK Push failed", error: error.response?.data || error.message });
+    res
+      .status(500)
+      .json({
+        message: "M-Pesa STK Push failed",
+        error: error.response?.data || error.message,
+      });
   }
 };
 
@@ -66,9 +74,13 @@ exports.stkCallback = async (req, res) => {
 
     if (resultCode === 0) {
       const metadata = callbackData.Body.stkCallback.CallbackMetadata;
-      const amount = metadata.Item.find(i => i.Name === "Amount")?.Value;
-      const mpesaReceiptNumber = metadata.Item.find(i => i.Name === "MpesaReceiptNumber")?.Value;
-      const phoneNumber = metadata.Item.find(i => i.Name === "PhoneNumber")?.Value;
+      const amount = metadata.Item.find((i) => i.Name === "Amount")?.Value;
+      const mpesaReceiptNumber = metadata.Item.find(
+        (i) => i.Name === "MpesaReceiptNumber"
+      )?.Value;
+      const phoneNumber = metadata.Item.find(
+        (i) => i.Name === "PhoneNumber"
+      )?.Value;
 
       console.log("✅ Payment successful");
       console.log("Amount:", amount);
@@ -88,4 +100,3 @@ exports.stkCallback = async (req, res) => {
     res.status(500).json({ message: "Callback processing failed" });
   }
 };
-

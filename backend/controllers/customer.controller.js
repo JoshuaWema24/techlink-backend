@@ -21,14 +21,27 @@ exports.createCustomer = async (req, res) => {
     console.log("Received customer data:", req.body);
 
     // Validate required fields
-    if (!name || !email || !phonenumber || !country || !county || !subcounty || !estate || !password) {
-      return res.status(400).json({ message: "Please fill in all required fields." });
+    if (
+      !name ||
+      !email ||
+      !phonenumber ||
+      !country ||
+      !county ||
+      !subcounty ||
+      !estate ||
+      !password
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Please fill in all required fields." });
     }
 
     // Check if customer already exists
     const existingCustomer = await Customer.findOne({ email });
     if (existingCustomer) {
-      return res.status(409).json({ message: "Customer with this email already exists." });
+      return res
+        .status(409)
+        .json({ message: "Customer with this email already exists." });
     }
 
     // Hash the password
@@ -48,25 +61,24 @@ exports.createCustomer = async (req, res) => {
 
     const savedCustomer = await newCustomer.save();
     res.status(201).json(savedCustomer);
-    
   } catch (error) {
     console.error("Error creating customer:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
- 
+
 //get customer
-exports.getCustomer = async(req, res) => {
-    try {
-       const { name } = req.params;
-           const customer = await Customer.findOne({ name });
-           if (!customer) {
-             return res.status(404).json({ message: 'customer not found' });
-           }
-     res.status(200).json(customer);
-    } catch (error) {
-        res.status(400).json({ message: 'Server error'})
+exports.getCustomer = async (req, res) => {
+  try {
+    const { name } = req.params;
+    const customer = await Customer.findOne({ name });
+    if (!customer) {
+      return res.status(404).json({ message: "customer not found" });
     }
+    res.status(200).json(customer);
+  } catch (error) {
+    res.status(400).json({ message: "Server error" });
+  }
 };
 
 // Get all customers

@@ -1,18 +1,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Request = require("../models/requests.model"); 
-
+const Request = require("../models/requests.model");
 
 // Create request
 exports.createRequest = async (req, res) => {
   try {
     const customerId = req.user.id;
-    const { requestId, serviceType, urgency, description, location, time } = req.body;
-     console.log("Creating request for:", customerId);
+    const { requestId, serviceType, urgency, description, location, time } =
+      req.body;
+    console.log("Creating request for:", customerId);
     console.log("Request body:", req.body);
 
     const newRequest = new Request({
-      customerId, 
+      customerId,
       requestId,
       serviceType,
       urgency,
@@ -56,8 +56,6 @@ exports.getRequestsByUser = async (req, res) => {
     res.status(400).json({ message: "Error fetching user requests", error });
   }
 };
-
-
 
 // Read all requests
 exports.getRequests = async (req, res) => {
