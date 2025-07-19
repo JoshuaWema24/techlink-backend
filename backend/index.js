@@ -145,7 +145,7 @@ app.delete("/deleteTechnicians/:name", technicianController.deleteTechnician);
 // job routes
 const jobControllers = require("./controllers/jobs.controllers");
 app.post("/api/createJob", auth, jobControllers.createJob);
-app.get("api/getJob", jobControllers.getJob);
+app.get("api/getJob",auth, jobControllers.getJob);
 
 //mpesa route
 const mpesaController = require("./controllers/mpesa.controller");
