@@ -120,6 +120,11 @@ app.post(
   }
 );
 
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // Routes
 // customer routes
 const customerControllers = require("./controllers/customer.controller");
@@ -145,7 +150,7 @@ app.delete("/deleteTechnicians/:name", technicianController.deleteTechnician);
 // job routes
 const jobControllers = require("./controllers/jobs.controllers");
 app.post("/createJob", auth, jobControllers.createJob);
-app.get("api/getJob",auth, jobControllers.getJob);
+app.get("api/getJob", auth, jobControllers.getJob);
 
 //mpesa route
 const mpesaController = require("./controllers/mpesa.controller");
