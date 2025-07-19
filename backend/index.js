@@ -147,7 +147,7 @@ app.get("api/getJob", jobControllers.getJob);
 
 //mpesa route
 const mpesaController = require("./controllers/mpesa.controller");
-app.post('api/stkpush', mpesaController.stkPush)
+app.post('/stkpush', mpesaController.stkPush)
 
 //app 
 const PORT = process.env.PORT || 3000;
