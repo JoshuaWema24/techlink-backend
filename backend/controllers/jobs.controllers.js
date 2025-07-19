@@ -27,6 +27,8 @@ exports.createJob = async (req, res) => {
 
     const savedJob = await newJob.save();
     res.status(201).json(savedJob);
+
+    res.status(200).json({ message: "Job assigned successfully!" });
   } catch (error) {
     res.status(400).json({ message: "Server Error" });
   }
