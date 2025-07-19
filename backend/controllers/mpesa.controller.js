@@ -66,37 +66,9 @@ exports.stkPush = async (req, res) => {
 
 exports.stkCallback = async (req, res) => {
   try {
-    const callbackData = req.body;
-
-    const resultCode = callbackData.Body.stkCallback.ResultCode;
-    const resultDesc = callbackData.Body.stkCallback.ResultDesc;
-    const checkoutRequestID = callbackData.Body.stkCallback.CheckoutRequestID;
-
-    if (resultCode === 0) {
-      const metadata = callbackData.Body.stkCallback.CallbackMetadata;
-      const amount = metadata.Item.find((i) => i.Name === "Amount")?.Value;
-      const mpesaReceiptNumber = metadata.Item.find(
-        (i) => i.Name === "MpesaReceiptNumber"
-      )?.Value;
-      const phoneNumber = metadata.Item.find(
-        (i) => i.Name === "PhoneNumber"
-      )?.Value;
-
-      console.log("✅ Payment successful");
-      console.log("Amount:", amount);
-      console.log("Receipt:", mpesaReceiptNumber);
-      console.log("Phone:", phoneNumber);
-
-      // TODO: Save to DB or update user account
-    } else {
-      console.warn("❌ Payment failed or cancelled:", resultDesc);
-      // You can log this attempt or handle failure logic here
-    }
-
-    // M-Pesa requires a response with HTTP 200 OK
+    // Just acknowledge that the callback was received
     res.status(200).json({ message: "Callback received successfully" });
   } catch (error) {
-    console.error("Callback Error:", error.message);
     res.status(500).json({ message: "Callback processing failed" });
   }
 };
