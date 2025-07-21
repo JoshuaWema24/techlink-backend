@@ -4,7 +4,7 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-const auth = require("./middleware/auth");
+const auth = require("../middleware/auth");
 const adminModel = require("../models/admin.model");
 
 exports.createAdmin = async (req, res) => {
