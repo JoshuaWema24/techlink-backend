@@ -127,9 +127,10 @@ app.use((req, res, next) => {
 
 // Routes
 //admin routes
-const adminControllers = require("./controllers/admin.controller");
+const adminControllers = require("./controllers/admin.controller.js");
 app.post("/adminSignUp", adminControllers.createAdmin);
 app.post("/adminLogin", adminControllers.loginAdmin);
+
 // customer routes
 const customerControllers = require("./controllers/customer.controller");
 app.post("/customerSignUp", customerControllers.createCustomer);
