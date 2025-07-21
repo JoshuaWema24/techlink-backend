@@ -126,6 +126,10 @@ app.use((req, res, next) => {
 });
 
 // Routes
+//admin routes
+const adminControllers = require("./controllers/admin.controller");
+app.post("/adminSignUp", adminControllers.createAdmin);
+app.post("/adminLogin", adminControllers.loginAdmin);
 // customer routes
 const customerControllers = require("./controllers/customer.controller");
 app.post("/customerSignUp", customerControllers.createCustomer);
@@ -138,6 +142,7 @@ app.delete("/deleteCustomer/:name", customerControllers.deleteCustomer);
 const requestControllers = require("./controllers/request.controllers");
 app.post("/api/request-service", auth, requestControllers.createRequest);
 app.get("/api/my-requests", auth, requestControllers.getRequestsByUser);
+app.get("/api/requests", auth, requestControllers.getAllRequests);
 
 //technicians route
 const technicianController = require("./controllers/technicians.controllers");
