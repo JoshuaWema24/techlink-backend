@@ -146,7 +146,7 @@ app.delete("/deleteCustomer/:name", customerControllers.deleteCustomer);
 const requestControllers = require("./controllers/request.controllers");
 app.post("/api/request-service", auth, requestControllers.createRequest);
 app.get("/api/my-requests", auth, requestControllers.getRequestsByUser);
-app.get("/api/requests", auth, requestControllers.getAllRequests);
+app.get("/api/requests", auth, requestControllers.getRequests);
 
 //technicians route
 const technicianController = require("./controllers/technicians.controllers");
