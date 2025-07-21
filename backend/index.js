@@ -130,6 +130,9 @@ app.use((req, res, next) => {
 const adminControllers = require("./controllers/admin.controller.js");
 app.post("/adminSignUp", adminControllers.createAdmin);
 app.post("/adminLogin", adminControllers.loginAdmin);
+console.log("adminControllers:", adminControllers);
+console.log("typeof createAdmin:", typeof adminControllers.createAdmin);
+console.log("typeof loginAdmin:", typeof adminControllers.loginAdmin);
 
 // customer routes
 const customerControllers = require("./controllers/customer.controller");
