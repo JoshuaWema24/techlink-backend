@@ -14,6 +14,7 @@ app.use(
     origin: [
       "https://techlink-website.vercel.app",
       "https://developer.safaricom.co.ke",
+      "https://biz-link-admin.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
