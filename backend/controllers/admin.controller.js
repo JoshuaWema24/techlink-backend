@@ -60,7 +60,7 @@ exports.loginAdmin = async (req, res) => {
     const adminObj = admin[0].toObject();
     delete adminObj.password; // Remove password from response
     res.json({ token, admin: adminObj });
-  } catch (err) {
+  } catch (error) {
     console.error("Error logging in admin:", err);
     res.status(500).json({ message: "Server error while logging in" });
   }
