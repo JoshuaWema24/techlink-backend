@@ -3,9 +3,6 @@ const mongoose = require("mongoose");
 const Request = require("../models/requests.model");
 
 // Create request
-const Request = require("../models/Request");
-const mongoose = require("mongoose");
-
 exports.createRequest = async (req, res) => {
   try {
     const customerId = req.user.id; // Comes from JWT middleware
