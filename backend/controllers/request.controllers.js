@@ -41,23 +41,37 @@ exports.createRequest = async (req, res) => {
 exports.getRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const request = await Request.findById(requestId);
+
+    console.log("Fetching request with ID:", requestId);
+    const request = await Request.findById(requestId).populate({
+      path: "customerId",
+      select: "name phonenumber"
+    });
+
     if (!request) {
       return res.status(404).json({ message: "Request not found" });
     }
+
     res.status(200).json(request);
   } catch (error) {
+    console.error("Error fetching request:", error);
     res.status(400).json({ message: "Server error", error });
   }
 };
-// Get all requests for a specific customer
 
+// Get all requests for a specific customer
 exports.getRequestsByUser = async (req, res) => {
   try {
-    const userId = req.user.id; // comes from the decoded token
+    const userId = req.user.id;
+
     const requests = await Request.find({
       customerId: new mongoose.Types.ObjectId(userId),
-    }).sort({ createdAt: -1 });
+    })
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "customerId",
+        select: "name phonenumber",
+      });
 
     console.log("Found", requests.length, "requests for", userId);
     res.status(200).json(requests);
@@ -67,15 +81,20 @@ exports.getRequestsByUser = async (req, res) => {
   }
 };
 
-// Read all requests
 exports.getRequests = async (req, res) => {
   try {
-    const requests = await Request.find();
+    const requests = await Request.find().populate({
+      path: "customerId",
+      select: "name phonenumber",
+    });
+
     res.status(200).json(requests);
   } catch (error) {
+    console.error("Error fetching all requests:", error);
     res.status(400).json({ message: "Server error", error });
   }
 };
+
 
 // Update request
 exports.updateRequest = async (req, res) => {
