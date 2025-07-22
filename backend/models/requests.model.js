@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 
 const requestSchema = new mongoose.Schema({
-  customerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Customer",
-    required: true,
-  },
   requestId: {
     type: mongoose.Schema.Types.ObjectId,
     default: () => new mongoose.Types.ObjectId(),
+    required: true,
+  },
+  customerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Customer",
     required: true,
   },
   serviceType: {

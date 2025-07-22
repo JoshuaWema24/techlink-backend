@@ -3,26 +3,39 @@ const mongoose = require("mongoose");
 const Request = require("../models/requests.model");
 
 // Create request
+const Request = require("../models/Request");
+const mongoose = require("mongoose");
+
 exports.createRequest = async (req, res) => {
   try {
-    const customerId = req.user.id;
-    const { requestId, serviceType, urgency, description, location, time } =
-      req.body;
+    const customerId = req.user.id; // Comes from JWT middleware
+    const { serviceType, urgency, description, location, time } = req.body;
+
     console.log("Creating request for:", customerId);
     console.log("Request body:", req.body);
 
+    // new request with customerId and other details
     const newRequest = new Request({
+      requestId: new mongoose.Types.ObjectId(),
       customerId,
-      requestId,
       serviceType,
       urgency,
       description,
       location,
       time,
     });
+
     const savedRequest = await newRequest.save();
-    res.status(201).json(savedRequest);
+
+    // Populate customer name and phone
+    const populatedRequest = await Request.findById(savedRequest._id).populate({
+      path: "customerId",
+      select: "name phonenumber",
+    });
+
+    res.status(201).json(populatedRequest);
   } catch (error) {
+    console.error("Error creating request:", error);
     res.status(400).json({ message: "Server error", error });
   }
 };
