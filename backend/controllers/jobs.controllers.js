@@ -13,9 +13,9 @@ exports.createJob = async (req, res) => {
       location,
       tldescription,
       customerDescription,
+      technicianId, // <-- ADD THIS
       technicianName,
     } = req.body;
-
     // Find technician by name
     const technician = await Technician.findOne({ name: technicianName });
 
@@ -31,7 +31,7 @@ exports.createJob = async (req, res) => {
       location,
       tldescription,
       customerDescription,
-      assignedTo: technician._id, // Save the ID not the name
+      technicianId,
     });
 
     const savedJob = await newJob.save();
@@ -88,11 +88,12 @@ exports.getJobsByTechnician = async (req, res) => {
     const jobs = await Job.find({ assignedTo: technicianIdFromToken });
 
     if (!jobs || jobs.length === 0) {
-      return res.status(404).json({ message: "No jobs found for this technician." });
+      return res
+        .status(404)
+        .json({ message: "No jobs found for this technician." });
     }
 
     res.status(200).json(jobs);
-
   } catch (error) {
     console.error("Error while fetching technician's jobs:", error);
     res.status(500).json({ message: "Server error. Could not retrieve jobs." });
