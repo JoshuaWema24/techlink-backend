@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const express = require("express");
+const techniciansModel = require("./technicians.model");
 
 const jobsSchema = new mongoose.Schema({
   serviceType: {
@@ -36,14 +37,12 @@ const jobsSchema = new mongoose.Schema({
     required: true,
   },
   technicianId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Technician",
+    type: String,
     required: true,
   },
-  assignedTo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Technician",
-    required: true,
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 module.exports = mongoose.model("Job", jobsSchema);
