@@ -1,6 +1,7 @@
 const express = require("express");
 const Job = require("../models/jobs.model");
 const mongoose = require("mongoose");
+const Technician = require("../models/technicians.model");
 
 //create Jpb
 exports.createJob = async (req, res) => {
@@ -77,7 +78,6 @@ exports.getAllJobs = async (req, res) => {
 
 exports.getJobsByTechnician = async (req, res) => {
   try {
-    const technicianIdFromParams = req.params.id;
     const technicianIdFromToken = req.user.id; // from decoded JWT (set in middleware)
 
     // Deny access if technician tries to access someone else's jobs
