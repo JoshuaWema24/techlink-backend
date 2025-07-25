@@ -5,7 +5,6 @@ const Technician = require("../models/technicians.model");
 
 //create Jpb
 
-
 exports.createJob = async (req, res) => {
   try {
     const {
@@ -38,6 +37,8 @@ exports.createJob = async (req, res) => {
     });
 
     const savedJob = await newJob.save();
+
+    notifyTechnician(technicianId, newJob);
 
     res.status(201).json({
       message: "Job assigned successfully!",
@@ -87,7 +88,9 @@ exports.getJobsByTechnician = async (req, res) => {
     const jobs = await Job.find({ technicianId });
 
     if (!jobs || jobs.length === 0) {
-      return res.status(404).json({ message: "No jobs found for this technician." });
+      return res
+        .status(404)
+        .json({ message: "No jobs found for this technician." });
     }
 
     res.status(200).json(jobs);
