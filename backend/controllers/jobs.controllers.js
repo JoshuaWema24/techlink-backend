@@ -37,9 +37,6 @@ exports.createJob = async (req, res) => {
     });
 
     const savedJob = await newJob.save();
-
-    notifyTechnician(technicianId, newJob);
-
     res.status(201).json({
       message: "Job assigned successfully!",
       job: savedJob,
