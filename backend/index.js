@@ -126,6 +126,7 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // Routes
 //admin routes
 const adminControllers = require("./controllers/admin.controller.js");
