@@ -4,8 +4,7 @@ const mongoose = require("mongoose");
 const Technician = require("../models/technicians.model");
 
 //create Jpb
-const Job = require("../models/jobs.model"); // Ensure path is correct
-const Technician = require("../models/technicians.model");
+
 
 exports.createJob = async (req, res) => {
   try {
