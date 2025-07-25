@@ -31,6 +31,20 @@ const jobsSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  technicianName: {
+    type: String,
+    required: true,
+  },
+  technicianId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Technician",
+    required: true,
+  },
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Technician",
+    required: true,
+  },
 });
 
 exports.Jobs = mongoose.model("jobs", jobsSchema);
