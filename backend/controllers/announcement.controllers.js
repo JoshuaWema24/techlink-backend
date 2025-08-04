@@ -29,3 +29,4 @@ exports.getAnnouncements = async (req, res) => {
         res.status(400).json({ message: " Error within the server"})
     }
 };
+ 

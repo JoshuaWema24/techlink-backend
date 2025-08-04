@@ -177,6 +177,11 @@ const serviceControllers = require("./controllers/service.controller.js");
 app.post('/api/service', serviceControllers.createService);
 app.get('/api/getServices', serviceControllers.getServices);
 
+//announcement routes
+const announcementControllers =  require('./controllers/announcement.controllers.js');
+app.post('/api/createAnnouncement', announcementControllers.createAnnouncement);
+app.get('/api/getAnnouncements', announcementControllers.getAnnouncements);
+
 //app
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
