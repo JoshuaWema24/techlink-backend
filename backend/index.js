@@ -172,6 +172,11 @@ const mpesaController = require("./controllers/mpesa.controller");
 app.post("/stkpush", mpesaController.stkPush);
 app.post("/api/mpesa/callback", mpesaController.stkCallback);
 
+// service routes
+const serviceControllers = require("./controllers/service.controllers");
+app.post('api/service', serviceControllers.createService);
+app.get('api/getServices', serviceControllers.getServices);
+
 //app
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
