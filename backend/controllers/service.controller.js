@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const express = require("express"); 
+const service = require('../models/service.model');
 
 exports.createService = async (req, res) => {
   try {
