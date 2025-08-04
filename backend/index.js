@@ -9,7 +9,23 @@ const auth = require("./middleware/auth");
 const Customer = require("./models/customer.model");
 const Technician = require("./models/technicians.model");
 const path = require("path");
+const http = require('http');
+const socketIo = require("socket.io");
+const server = http.createServer(app);
 
+const io = socketIo(server, {
+  cors: {
+    origin: [
+      "https://techlink-website.vercel.app",
+      "https://developer.safaricom.co.ke",
+      "https://biz-link-admin.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  }
+});
+ io.on("connection", (socket) => {
+  console.log("Technician connected:", socket.id); 
+ }) 
 
 app.use(
   cors({
@@ -172,8 +188,14 @@ const mpesaController = require("./controllers/mpesa.controller");
 app.post("/stkpush", mpesaController.stkPush);
 app.post("/api/mpesa/callback", mpesaController.stkCallback);
 
+//service controllers
+const serviceControllers = require('./controllers/service.controller.js');
+app.post('/api/service', serviceControllers.createService);
+app.get('/api/getServices', serviceControllers.getServices);
+
 //app
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port ${PORT}");
 });
+ 

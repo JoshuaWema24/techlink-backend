@@ -5,7 +5,7 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: "*", // Allow all or specify your frontend origin
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST", "DELETE", "PUT"]
   }
 });
 io.on("connection", (socket) => {
