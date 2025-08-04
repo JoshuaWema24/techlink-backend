@@ -173,7 +173,7 @@ app.post("/stkpush", mpesaController.stkPush);
 app.post("/api/mpesa/callback", mpesaController.stkCallback);
 
 // service routes
-const serviceControllers = require("./controllers/service.controllers");
+const serviceControllers = require("./controllers/service.controller");
 app.post('api/service', serviceControllers.createService);
 app.get('api/getServices', serviceControllers.getServices);
 
