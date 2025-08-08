@@ -181,6 +181,11 @@ app.get('/api/getServices', serviceControllers.getServices);
 const announcementControllers =  require('./controllers/announcement.controllers.js');
 app.post('/api/createAnnouncement', announcementControllers.createAnnouncement);
 app.get('/api/getAnnouncements', announcementControllers.getAnnouncements);
+app.put('/api/updateAnnouncement/:id', announcementControllers.updateAnnouncement);
+app.delete('/api/deleteAnnouncement/:id', announcementControllers.deleteAnnouncement);
+
+// Serve static files from the "uploads" directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));   
 
 //app
 const PORT = process.env.PORT || 3000;
