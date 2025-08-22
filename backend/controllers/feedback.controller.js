@@ -1,20 +1,25 @@
 const mongoose = require("mongoose");
 const express = require("express");
- const Feedback = require("../models/feedback.model");
-
+const Feedback = require("../models/feedback.model");
 
 // Create feedback
 // Create new feedback
 exports.createFeedback = async (req, res) => {
-  const { name, email, subject, message } = req.body;
+  const { name, email, subject, userMessage } = req.body;
 
-  if (!name || !email || !message) {
+  if (!name || !email || !userMessage) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   try {
     // create with timestamp
-    const feedback = new Feedback({ name, email, subject, message, timestamp: new Date() });
+    const feedback = new Feedback({
+      name,
+      email,
+      subject,
+      message,
+      timestamp: new Date(),
+    });
     await feedback.save();
 
     // return the saved feedback object
