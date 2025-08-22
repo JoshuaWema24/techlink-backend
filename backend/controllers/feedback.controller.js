@@ -17,7 +17,7 @@ exports.createFeedback = async (req, res) => {
       name,
       email,
       subject,
-      message,
+      userMessage,
       timestamp: new Date(),
     });
     await feedback.save();
