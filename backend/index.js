@@ -216,7 +216,7 @@ const feedbackControllers = require('./controllers/feedback.controller.js');
 console.log("feedbackControllers:", feedbackControllers);
 app.post('/api/feedback', feedbackControllers.createFeedback);
 app.get('/api/feedbacks', feedbackControllers.getFeedbacks);
-app.delete('/api/deleteFeedback/:id', feedbackControllers.deleteFeedback);
+
 
 // Serve static files from the "uploads" directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));   
