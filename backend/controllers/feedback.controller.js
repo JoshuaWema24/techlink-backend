@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const express = require("express");
  const Feedback = require("../models/feedback.model");
 
-const Feedback = require("../models/feedback.model");
 
 // Create feedback
 exports.createFeedback = async (req, res) => {
