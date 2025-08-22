@@ -204,6 +204,7 @@ app.get('/api/getServices', serviceControllers.getServices);
 app.delete('/api/deleteService/:id', serviceControllers.deleteService);
 app.put('/api/updateService/:id', serviceControllers.updateService);
 
+
 //announcement routes
 const announcementControllers =  require('./controllers/announcement.controllers.js');
 console.log("announcementControllers:", announcementControllers);
@@ -227,4 +228,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port ${PORT}");
 });
- 
+  
