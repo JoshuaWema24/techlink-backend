@@ -160,7 +160,8 @@ app.post("/customerSignUp", customerControllers.createCustomer);
 app.get("/getCustomers", customerControllers.getCustomers);
 app.get("/getCustomer/:name", customerControllers.getCustomer);
 app.put("/updateCustomer/:name", customerControllers.updateCustomer);
-app.delete("/deleteCustomer/:name", customerControllers.deleteCustomer);
+app.delete("/deleteCustomer/:id", customerControllers.deleteCustomer);
+
 
 //request route
 const requestControllers = require("./controllers/request.controllers");

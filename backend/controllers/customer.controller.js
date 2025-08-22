@@ -125,10 +125,9 @@ exports.updateCustomer = async (req, res) => {
 // Delete a customer by name
 exports.deleteCustomer = async (req, res) => {
   try {
-    const { name } = req.params;
-    const deletedCustomer = await Customer.findOneAndDelete({
-      name: new RegExp("^" + name + "$", "i") // exact match, case-insensitive
-    });
+    const { id } = req.params;
+
+    const deletedCustomer = await Customer.findByIdAndDelete(id);
 
     if (!deletedCustomer) {
       return res.status(404).json({ message: "Customer not found" });
@@ -139,3 +138,4 @@ exports.deleteCustomer = async (req, res) => {
     res.status(400).json({ message: "Server error", error });
   }
 };
+
