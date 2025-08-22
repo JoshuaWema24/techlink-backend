@@ -88,12 +88,13 @@ exports.updateService = async (req, res) => {
 };
 exports.deleteService = async (req, res) => {
   try {
-    const { serviceName } = req.params;
+    const { id } = req.params;
 
-    const deletedService = await Service.findOneAndDelete({ serviceName });
+    const deletedService = await Service.findByIdAndDelete(id);
     if (!deletedService) {
       return res.status(404).json({ message: "Service not found" });
     }
+
     res.status(200).json({ message: "Service deleted successfully" });
   } catch (error) {
     console.error("Error deleting service:", error);
