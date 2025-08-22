@@ -193,12 +193,6 @@ const serviceControllers = require('./controllers/service.controller.js');
 app.post('/api/service', serviceControllers.createService);
 app.get('/api/getServices', serviceControllers.getServices);
 
-
-// service routes
-const serviceControllers = require("./controllers/service.controller.js");
-app.post('/api/service', serviceControllers.createService);
-app.get('/api/getServices', serviceControllers.getServices);
-
 //announcement routes
 const announcementControllers =  require('./controllers/announcement.controllers.js');
 app.post('/api/createAnnouncement', announcementControllers.createAnnouncement);
