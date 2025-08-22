@@ -148,6 +148,7 @@ app.use((req, res, next) => {
 // Routes
 //admin routes
 const adminControllers = require("./controllers/admin.controller.js");
+console.log("adminControllers:", adminControllers);
 app.post("/adminSignUp", adminControllers.createAdmin);
 app.post("/adminLogin", adminControllers.loginAdmin);
 console.log("adminControllers:", adminControllers);
@@ -156,6 +157,7 @@ console.log("typeof loginAdmin:", typeof adminControllers.loginAdmin);
 
 // customer routes
 const customerControllers = require("./controllers/customer.controller");
+console.log("customerControllers:", customerControllers);
 app.post("/customerSignUp", customerControllers.createCustomer);
 app.get("/getCustomers", customerControllers.getCustomers);
 app.get("/getCustomer/:name", customerControllers.getCustomer);
@@ -168,9 +170,11 @@ const requestControllers = require("./controllers/request.controllers");
 app.post("/api/request-service", auth, requestControllers.createRequest);
 app.get("/api/my-requests", auth, requestControllers.getRequestsByUser);
 app.get("/api/requests", auth, requestControllers.getRequests);
+console.log("requestControllers:", requestControllers);
 
 //technicians route
 const technicianController = require("./controllers/technicians.controllers");
+console.log("technicianController:", technicianController); 
 app.post("/technicianSignUp", technicianController.createTechnician);
 app.get("/getTechnicians", technicianController.getTechnicians);
 app.get("/getTechnician/:name", technicianController.getTechnician);
@@ -180,6 +184,7 @@ app.delete("/deleteTechnician/:id", technicianController.deleteTechnician);
 
 // job routes
 const jobControllers = require("./controllers/jobs.controllers");
+console.log("jobControllers:", jobControllers);
 app.post("/createJob", auth, jobControllers.createJob);
 app.get("api/getJob", auth, jobControllers.getJob);
 app.get("/api/getAllJobs", auth, jobControllers.getAllJobs);
@@ -187,11 +192,13 @@ app.get("/api/jobs/technician/:id", auth, jobControllers.getJobsByTechnician);
 
 //mpesa route
 const mpesaController = require("./controllers/mpesa.controller");
+console.log("mpesaController:", mpesaController);
 app.post("/stkpush", mpesaController.stkPush);
 app.post("/api/mpesa/callback", mpesaController.stkCallback);
 
 //service controllers
 const serviceControllers = require('./controllers/service.controller.js');
+console.log("serviceControllers:", serviceControllers);
 app.post('/api/service', serviceControllers.createService);
 app.get('/api/getServices', serviceControllers.getServices);
 app.delete('/api/deleteService/:id', serviceControllers.deleteService);
@@ -199,12 +206,14 @@ app.put('/api/updateService/:id', serviceControllers.updateService);
 
 //announcement routes
 const announcementControllers =  require('./controllers/announcement.controllers.js');
+console.log("announcementControllers:", announcementControllers);
 app.post('/api/createAnnouncement', announcementControllers.createAnnouncement);
 app.get('/api/getAnnouncements', announcementControllers.getAnnouncements);
 app.put('/api/updateAnnouncement/:id', announcementControllers.updateAnnouncement);
 app.delete('/api/deleteAnnouncement/:id', announcementControllers.deleteAnnouncement);
 
 const feedbackControllers = require('./controllers/feedback.controller.js');
+console.log("feedbackControllers:", feedbackControllers);
 app.post('/api/feedback', feedbackControllers.createFeedback);
 app.get('/api/feedbacks', feedbackControllers.getFeedbacks);
 app.delete('/api/deleteFeedback/:id', feedbackControllers.deleteFeedback);
