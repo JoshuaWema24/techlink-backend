@@ -202,6 +202,10 @@ app.get('/api/getAnnouncements', announcementControllers.getAnnouncements);
 app.put('/api/updateAnnouncement/:id', announcementControllers.updateAnnouncement);
 app.delete('/api/deleteAnnouncement/:id', announcementControllers.deleteAnnouncement);
 
+const feedbackControllers = require('./controllers/feedback.controller.js');
+app.post('/api/feedback', feedbackControllers.createFeedback);
+app.get('/api/feedbacks', feedbackControllers.getFeedbacks);
+
 // Serve static files from the "uploads" directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));   
 
