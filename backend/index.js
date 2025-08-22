@@ -194,6 +194,8 @@ app.post("/api/mpesa/callback", mpesaController.stkCallback);
 const serviceControllers = require('./controllers/service.controller.js');
 app.post('/api/service', serviceControllers.createService);
 app.get('/api/getServices', serviceControllers.getServices);
+app.delete('/api/deleteService/:id', serviceControllers.deleteService);
+app.put('/api/updateService/:id', serviceControllers.updateService);
 
 //announcement routes
 const announcementControllers =  require('./controllers/announcement.controllers.js');
@@ -205,6 +207,7 @@ app.delete('/api/deleteAnnouncement/:id', announcementControllers.deleteAnnounce
 const feedbackControllers = require('./controllers/feedback.controller.js');
 app.post('/api/feedback', feedbackControllers.createFeedback);
 app.get('/api/feedbacks', feedbackControllers.getFeedbacks);
+app.delete('/api/deleteFeedback/:id', feedbackControllers.deleteFeedback);
 
 // Serve static files from the "uploads" directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));   
