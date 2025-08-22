@@ -1,55 +1,58 @@
 const mongoose = require("mongoose");
-const express = require("express"); 
+const express = require("express");
+const Service = require("../models/service.model");
 
 exports.createService = async (req, res) => {
   try {
     const { serviceName, serviceInfo } = req.body;
 
-    // Validate input
     if (!serviceName || !serviceInfo) {
-      return res.status(400).json({ message: "Service name and info are required." });
+      return res
+        .status(400)
+        .json({ message: "Service name and info are required." });
     }
 
-    // Create new service
     const newService = new Service({
       serviceName,
       serviceInfo,
     });
 
     await newService.save();
-    res.status(201).json({ message: "Service created successfully", service: newService });
+    res
+      .status(201)
+      .json({ message: "Service created successfully", service: newService });
   } catch (error) {
     console.error("Error creating service:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
- 
-//read all services
+
+// Read all services
 exports.getServices = async (req, res) => {
-    try {
-        const services = await Service.find();
-        res.status(200).json(services);
-    } catch (error) {
-        console.error("Error fetching services:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
+  try {
+    const services = await Service.find();
+    res.status(200).json(services);
+  } catch (error) {
+    console.error("Error fetching services:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//read single service
+exports.getService = async (req, res) => {
+  try {
+    const { serviceName } = req.params;
+    const service = await Service.findByName(serviceName);
+
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
     }
 
-    //read single service
-exports.getService = async (req, res) => {
-    try {
-        const { serviceName } = req.params;
-        const service = await Service.findByName(serviceName);
-        
-        if (!service) {
-            return res.status(404).json({ message: "Service not found" });
-        }
-        
-        res.status(200).json(service);
-    } catch (error) {
-        console.error("Error fetching service:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
+    res.status(200).json(service);
+  } catch (error) {
+    console.error("Error fetching service:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 exports.updateService = async (req, res) => {
@@ -72,23 +75,28 @@ exports.updateService = async (req, res) => {
       return res.status(404).json({ message: "Service not found" });
     }
 
-    res.status(200).json({ message: "Service updated successfully", service: updatedService });
+    res
+      .status(200)
+      .json({
+        message: "Service updated successfully",
+        service: updatedService,
+      });
   } catch (error) {
     console.error("Error updating service:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
- exports.deleteService = async (req, res) => {
+exports.deleteService = async (req, res) => {
   try {
     const { serviceName } = req.params;
 
     const deletedService = await Service.findOneAndDelete({ serviceName });
     if (!deletedService) {
       return res.status(404).json({ message: "Service not found" });
-    }  
+    }
     res.status(200).json({ message: "Service deleted successfully" });
   } catch (error) {
     console.error("Error deleting service:", error);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
