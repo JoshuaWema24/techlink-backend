@@ -201,6 +201,8 @@ const serviceControllers = require('./controllers/service.controller.js');
 console.log("serviceControllers:", serviceControllers);
 app.post('/api/service', serviceControllers.createService);
 app.get('/api/getServices', serviceControllers.getServices);
+console.log("deleteService is:", serviceControllers.deleteService);
+console.log("deleteService type:", typeof serviceControllers.deleteService);
 app.delete('/api/deleteService/:id', serviceControllers.deleteService);
 app.put('/api/updateService/:id', serviceControllers.updateService);
 
