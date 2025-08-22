@@ -175,7 +175,8 @@ app.post("/technicianSignUp", technicianController.createTechnician);
 app.get("/getTechnicians", technicianController.getTechnicians);
 app.get("/getTechnician/:name", technicianController.getTechnician);
 app.put("/updateTechnicians/:name", technicianController.updateTechnician);
-app.delete("/deleteTechnicians/:name", technicianController.deleteTechnician);
+app.delete("/deleteTechnician/:id", technicianController.deleteTechnician);
+
 
 // job routes
 const jobControllers = require("./controllers/jobs.controllers");

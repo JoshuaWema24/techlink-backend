@@ -93,13 +93,16 @@ exports.updateTechnician = async (req, res) => {
 // Delete technician
 exports.deleteTechnician = async (req, res) => {
   try {
-    const { name } = req.params;
-    const deleted = await Technician.findOneAndDelete({ name });
-    if (!deleted) {
+    const { id } = req.params;
+
+    const deletedTechnician = await Technician.findByIdAndDelete(id);
+
+    if (!deletedTechnician) {
       return res.status(404).json({ message: "Technician not found" });
     }
+
     res.status(200).json({ message: "Technician deleted successfully" });
   } catch (error) {
-    res.status(400).json({ message: "Error deleting technician", error });
+    res.status(500).json({ message: "Error deleting technician", error });
   }
 };
