@@ -126,7 +126,9 @@ exports.updateCustomer = async (req, res) => {
 exports.deleteCustomer = async (req, res) => {
   try {
     const { name } = req.params;
-    const deletedCustomer = await Customer.findOneAndDelete({ name });
+    const deletedCustomer = await Customer.findOneAndDelete({
+      name: new RegExp("^" + name + "$", "i") // exact match, case-insensitive
+    });
 
     if (!deletedCustomer) {
       return res.status(404).json({ message: "Customer not found" });
