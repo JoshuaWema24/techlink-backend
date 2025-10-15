@@ -235,13 +235,7 @@ console.log("feedbackControllers:", feedbackControllers);
 app.post("/api/feedback", feedbackControllers.createFeedback);
 app.get("/api/feedbacks", feedbackControllers.getFeedbacks);
 
-const paymentControllers = require("./controllers/payment.controller.js");
-console.log("paymentControllers:", paymentControllers);
-app.post("/api/initiate-stk-push", paymentControllers.initiateStkPush);
-app.get(
-  "/api/check-payment-status/:reference",
-  paymentControllers.checkPaymentStatus
-);
+
 
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
