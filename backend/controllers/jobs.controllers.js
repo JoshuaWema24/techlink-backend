@@ -1,10 +1,9 @@
 const express = require("express");
-const Job = require("../models/jobs.model");
 const mongoose = require("mongoose");
+const Job = require("../models/jobs.model");
 const Technician = require("../models/technicians.model");
 
-//create Jpb
-
+// ===== CREATE JOB =====
 exports.createJob = async (req, res) => {
   try {
     const {
@@ -14,17 +13,16 @@ exports.createJob = async (req, res) => {
       location,
       tldescription,
       customerDescription,
-      technicianName, // from req.body
+      technicianName,
     } = req.body;
 
     // Find technician by name
     const technician = await Technician.findOne({ name: technicianName });
-
     if (!technician) {
       return res.status(404).json({ message: "Technician not found" });
     }
 
-    // Create job and assign technician's ID and name (but not assignedTo)
+    // Create new job
     const newJob = new Job({
       serviceType,
       customerName,
@@ -32,11 +30,16 @@ exports.createJob = async (req, res) => {
       location,
       tldescription,
       customerDescription,
-      technicianId: technician._id.toString(), // string form for your schema
+      technicianId: technician._id.toString(),
       technicianName: technician.name,
     });
 
     const savedJob = await newJob.save();
+
+    // Emit job creation event
+    const io = req.app.get("io");
+    io.emit("jobCreated", savedJob);
+
     res.status(201).json({
       message: "Job assigned successfully!",
       job: savedJob,
@@ -47,14 +50,16 @@ exports.createJob = async (req, res) => {
   }
 };
 
+// ===== GET ONE JOB =====
 exports.getJob = async (req, res) => {
   try {
     const jobId = req.params.id;
-
     const job = await Job.findById(jobId);
+
     if (!job) {
       return res.status(404).json({ message: "Job not found." });
     }
+
     res.status(200).json(job);
   } catch (error) {
     console.error("Server error while fetching job:", error);
@@ -63,6 +68,8 @@ exports.getJob = async (req, res) => {
       .json({ message: "Server error. Could not retrieve job details." });
   }
 };
+
+// ===== GET ALL JOBS =====
 exports.getAllJobs = async (req, res) => {
   try {
     const jobs = await Job.find();
@@ -73,15 +80,11 @@ exports.getAllJobs = async (req, res) => {
   }
 };
 
-//get jobs by technician
-// GET /api/jobs/technician/:id
-// Only returns jobs if the logged-in technician is requesting their own jobs
-
+// ===== GET JOBS BY TECHNICIAN =====
 exports.getJobsByTechnician = async (req, res) => {
   try {
-    const technicianId = req.user.id; // ID from decoded JWT
+    const technicianId = req.user.id; // from JWT
 
-    // Fetch jobs assigned to this technician only
     const jobs = await Job.find({ technicianId });
 
     if (!jobs || jobs.length === 0) {
@@ -96,12 +99,13 @@ exports.getJobsByTechnician = async (req, res) => {
     res.status(500).json({ message: "Server error. Could not retrieve jobs." });
   }
 };
+
+// ===== UPDATE JOB =====
 exports.updateJob = async (req, res) => {
   try {
     const jobId = req.params.id;
     const updates = req.body;
 
-    // Validate input
     if (!updates || Object.keys(updates).length === 0) {
       return res.status(400).json({ message: "No updates provided." });
     }
@@ -114,6 +118,10 @@ exports.updateJob = async (req, res) => {
     if (!updatedJob) {
       return res.status(404).json({ message: "Job not found." });
     }
+
+    // Emit job update event
+    const io = req.app.get("io");
+    io.emit("jobUpdated", updatedJob);
 
     res.status(200).json({
       message: "Job updated successfully!",

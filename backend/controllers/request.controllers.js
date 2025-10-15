@@ -2,16 +2,16 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Request = require("../models/requests.model");
 
-// Create request
+// ===== CREATE REQUEST =====
 exports.createRequest = async (req, res) => {
   try {
-    const customerId = req.user.id; // Comes from JWT middleware
+    const customerId = req.user.id; // from JWT
     const { serviceType, urgency, description, location, time } = req.body;
 
     console.log("Creating request for:", customerId);
     console.log("Request body:", req.body);
 
-    // new request with customerId and other details
+    // Create new request
     const newRequest = new Request({
       requestId: new mongoose.Types.ObjectId(),
       customerId,
@@ -30,6 +30,10 @@ exports.createRequest = async (req, res) => {
       select: "name phonenumber",
     });
 
+    // Emit event to connected clients
+    const io = req.app.get("io");
+    io.emit("requestCreated", populatedRequest);
+
     res.status(201).json(populatedRequest);
   } catch (error) {
     console.error("Error creating request:", error);
@@ -37,15 +41,15 @@ exports.createRequest = async (req, res) => {
   }
 };
 
-// Read single request
+// ===== GET SINGLE REQUEST =====
 exports.getRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-
     console.log("Fetching request with ID:", requestId);
+
     const request = await Request.findById(requestId).populate({
       path: "customerId",
-      select: "name phonenumber"
+      select: "name phonenumber",
     });
 
     if (!request) {
@@ -59,7 +63,7 @@ exports.getRequest = async (req, res) => {
   }
 };
 
-// Get all requests for a specific customer
+// ===== GET ALL REQUESTS FOR SPECIFIC USER =====
 exports.getRequestsByUser = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -81,6 +85,7 @@ exports.getRequestsByUser = async (req, res) => {
   }
 };
 
+// ===== GET ALL REQUESTS =====
 exports.getRequests = async (req, res) => {
   try {
     const requests = await Request.find().populate({
@@ -95,36 +100,53 @@ exports.getRequests = async (req, res) => {
   }
 };
 
-
-// Update request
+// ===== UPDATE REQUEST =====
 exports.updateRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
     const updateData = req.body;
+
     const updatedRequest = await Request.findByIdAndUpdate(
       requestId,
       updateData,
       { new: true }
-    );
+    ).populate({
+      path: "customerId",
+      select: "name phonenumber",
+    });
+
     if (!updatedRequest) {
       return res.status(404).json({ message: "Request not found" });
     }
+
+    // Emit event when updated
+    const io = req.app.get("io");
+    io.emit("requestUpdated", updatedRequest);
+
     res.status(200).json(updatedRequest);
   } catch (error) {
+    console.error("Error updating request:", error);
     res.status(400).json({ message: "Server error", error });
   }
 };
 
-// Delete request
+// ===== DELETE REQUEST =====
 exports.deleteRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
     const deletedRequest = await Request.findByIdAndDelete(requestId);
+
     if (!deletedRequest) {
       return res.status(404).json({ message: "Request not found" });
     }
+
+    // Emit event when deleted
+    const io = req.app.get("io");
+    io.emit("requestDeleted", requestId);
+
     res.status(200).json({ message: "Request deleted successfully" });
   } catch (error) {
+    console.error("Error deleting request:", error);
     res.status(400).json({ message: "Server error", error });
   }
 };

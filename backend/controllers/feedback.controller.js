@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 const express = require("express");
 const Feedback = require("../models/feedback.model");
 
-// Create feedback
-// Create new feedback
+
+// ===== Create Feedback =====
 exports.createFeedback = async (req, res) => {
   const { name, email, subject, userMessage } = req.body;
 
@@ -12,7 +12,7 @@ exports.createFeedback = async (req, res) => {
   }
 
   try {
-    // create with timestamp
+    // Create with timestamp
     const feedback = new Feedback({
       name,
       email,
@@ -20,23 +20,33 @@ exports.createFeedback = async (req, res) => {
       userMessage,
       timestamp: new Date(),
     });
+
     await feedback.save();
 
-    // return the saved feedback object
-    res.status(201).json(feedback);
+    // Emit event to all connected clients via Socket.IO
+    const io = req.app.get("io");
+    io.emit("feedbackCreated", feedback);
+
+    // Return saved feedback object
+    res.status(201).json({
+      message: "Feedback submitted successfully",
+      feedback,
+    });
   } catch (error) {
     console.error("Error saving feedback:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-// Get all feedback
+// ===== Get All Feedback =====
 exports.getFeedbacks = async (req, res) => {
   try {
     const feedbacks = await Feedback.find().sort({ timestamp: -1 });
+
     if (!feedbacks.length) {
       return res.status(404).json({ message: "No feedback found" });
     }
+
     res.status(200).json(feedbacks);
   } catch (error) {
     console.error("Error fetching feedback:", error);
