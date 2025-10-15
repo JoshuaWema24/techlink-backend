@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const express = require("express");
 const Feedback = require("../models/feedback.model");
 
-
 // ===== Create Feedback =====
 exports.createFeedback = async (req, res) => {
   const { name, email, subject, userMessage } = req.body;
@@ -25,7 +24,7 @@ exports.createFeedback = async (req, res) => {
 
     // Emit event to all connected clients via Socket.IO
     const io = req.app.get("io");
-    io.emit("feedbackCreated", feedback);
+    io.emit("newFeedback", feedback); // ✅ match frontend event name
 
     // Return saved feedback object
     res.status(201).json({
