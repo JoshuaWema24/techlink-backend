@@ -18,6 +18,16 @@ exports.createTechnician = async (req, res, io) => {
       jobtype,
     } = req.body;
 
+    // Check if email already exists before saving
+    const existingTechnician = await Technician.findOne({ email });
+    if (existingTechnician) {
+      return res.status(400).json({
+        message: "Email already exists",
+        error: { field: "email", value: email },
+      });
+    }
+
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newTechnician = new Technician({
@@ -34,13 +44,33 @@ exports.createTechnician = async (req, res, io) => {
 
     const savedTechnician = await newTechnician.save();
 
-    // 🔔 Emit event to all connected clients
+    // Emit event to connected clients
     if (io) io.emit("technicianCreated", savedTechnician);
 
-    res.status(201).json(savedTechnician);
+    res.status(201).json({
+      message: "Technician created successfully",
+      technician: savedTechnician,
+    });
   } catch (error) {
     console.error("Error creating technician:", error);
-    res.status(400).json({ message: "Error creating technician", error });
+
+    // Handle duplicate key error (just in case)
+    if (error.code === 11000) {
+      return res.status(400).json({
+        message: "Email already exists",
+        error: {
+          code: error.code,
+          keyValue: error.keyValue,
+          keyPattern: error.keyPattern,
+        },
+      });
+    }
+
+    // Handle other types of errors
+    res.status(500).json({
+      message: "Error creating technician",
+      error: error.message || "Unknown error occurred",
+    });
   }
 };
 

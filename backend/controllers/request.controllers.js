@@ -32,7 +32,9 @@ exports.createRequest = async (req, res) => {
 
     // Emit event to connected clients
     const io = req.app.get("io");
-    io.emit("requestCreated", populatedRequest);
+    
+   io.emit("newRequest", populatedRequest);
+
 
     res.status(201).json(populatedRequest);
   } catch (error) {
