@@ -44,18 +44,6 @@ exports.createTechnician = async (req, res, io) => {
   } catch (error) {
     console.error("Error creating technician:", error);
 
-    // Handle duplicate key error (just in case)
-    if (error.code === 11000) {
-      return res.status(400).json({
-        message: "Email already exists",
-        error: {
-          code: error.code,
-          keyValue: error.keyValue,
-          keyPattern: error.keyPattern,
-        },
-      });
-    }
-
     // Handle other types of errors
     res.status(500).json({
       message: "Error creating technician",
