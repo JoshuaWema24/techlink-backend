@@ -17,17 +17,7 @@ exports.createTechnician = async (req, res, io) => {
       password,
       jobtype,
     } = req.body;
-
-    // Check if email already exists before saving
-    const existingTechnician = await Technician.findOne({ email });
-    if (existingTechnician) {
-      return res.status(400).json({
-        message: "Email already exists",
-        error: { field: "email", value: email },
-      });
-    }
-
-    // Hash password
+   // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newTechnician = new Technician({
