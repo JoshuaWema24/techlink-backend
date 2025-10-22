@@ -39,6 +39,7 @@ exports.createJob = async (req, res) => {
       message: "Job assigned successfully!",
       job: savedJob,
     });
+    io.emit("new-job", savedJob); // Emit job creation event
   } catch (error) {
     console.error("Error creating job:", error);
     res.status(500).json({ message: "Server Error" });
