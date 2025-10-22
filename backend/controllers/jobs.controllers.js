@@ -37,6 +37,8 @@ exports.createJob = async (req, res) => {
     });
 
     const savedJob = await newJob.save();
+    
+     io.emit("new-job", savedJob);
     res.status(201).json({
       message: "Job assigned successfully!",
       job: savedJob,
@@ -89,8 +91,7 @@ exports.getJobsByTechnician = async (req, res) => {
         .status(404)
         .json({ message: "No jobs found for this technician." });
     }
-
-    res.status(200).json(jobs);
+      res.status(200).json(jobs);
   } catch (error) {
     console.error("Error while fetching technician's jobs:", error);
     res.status(500).json({ message: "Server error. Could not retrieve jobs." });
