@@ -60,6 +60,11 @@ exports.createCustomer = async (req, res) => {
     });
 
     const savedCustomer = await newCustomer.save();
+
+    // 🔔 Emit event to all connected clients
+    const io = req.app.get("io");
+    io.emit("customerCreated", savedCustomer);
+
     res.status(201).json(savedCustomer);
   } catch (error) {
     console.error("Error creating customer:", error);
@@ -67,16 +72,17 @@ exports.createCustomer = async (req, res) => {
   }
 };
 
-//get customer
+// Get a single customer by name
 exports.getCustomer = async (req, res) => {
   try {
     const { name } = req.params;
     const customer = await Customer.findOne({ name });
     if (!customer) {
-      return res.status(404).json({ message: "customer not found" });
+      return res.status(404).json({ message: "Customer not found" });
     }
     res.status(200).json(customer);
   } catch (error) {
+    console.error("Error fetching customer:", error);
     res.status(400).json({ message: "Server error" });
   }
 };
@@ -92,6 +98,7 @@ exports.getCustomers = async (req, res) => {
 
     res.status(200).json(customers);
   } catch (error) {
+    console.error("Error fetching customers:", error);
     res.status(400).json({ message: "Server error", error });
   }
 };
@@ -116,24 +123,35 @@ exports.updateCustomer = async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
+    // 🔔 Emit event
+    const io = req.app.get("io");
+    io.emit("customerUpdated", updatedCustomer);
+
     res.status(200).json(updatedCustomer);
   } catch (error) {
+    console.error("Error updating customer:", error);
     res.status(400).json({ message: "Server error", error });
   }
 };
 
-// Delete a customer by name
+// Delete a customer by ID
 exports.deleteCustomer = async (req, res) => {
   try {
-    const { name } = req.params;
-    const deletedCustomer = await Customer.findOneAndDelete({ name });
+    const { id } = req.params;
+
+    const deletedCustomer = await Customer.findByIdAndDelete(id);
 
     if (!deletedCustomer) {
       return res.status(404).json({ message: "Customer not found" });
     }
 
+    // 🔔 Emit delete event
+    const io = req.app.get("io");
+    io.emit("customerDeleted", { id });
+
     res.status(200).json({ message: "Customer deleted successfully" });
   } catch (error) {
+    console.error("Error deleting customer:", error);
     res.status(400).json({ message: "Server error", error });
   }
 };

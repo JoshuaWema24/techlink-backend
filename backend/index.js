@@ -9,7 +9,39 @@ const auth = require("./middleware/auth");
 const Customer = require("./models/customer.model");
 const Technician = require("./models/technicians.model");
 const path = require("path");
+const http = require("http");
+const socketIo = require("socket.io");
 
+// Create server and attach Socket.IO
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: [
+      "https://techlink-website.vercel.app",
+      "https://developer.safaricom.co.ke",
+      "https://biz-link-admin.vercel.app",
+      "http://localhost:3000", // allow local testing
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  },
+});
+
+// Socket.IO connection
+io.on("connection", (socket) => {
+  console.log("Technician connected:", socket.id);
+
+  socket.on("send_message", (data) => {
+    console.log("Message received:", data);
+    io.emit("receive_message", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Technician disconnected:", socket.id);
+  });
+});
+
+// Make io accessible in routes
+app.set("io", io);
 
 app.use(
   cors({
@@ -17,6 +49,7 @@ app.use(
       "https://techlink-website.vercel.app",
       "https://developer.safaricom.co.ke",
       "https://biz-link-admin.vercel.app",
+      "http://localhost:3000",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -128,10 +161,10 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // Routes
 //admin routes
 const adminControllers = require("./controllers/admin.controller.js");
+console.log("adminControllers:", adminControllers);
 app.post("/adminSignUp", adminControllers.createAdmin);
 app.post("/adminLogin", adminControllers.loginAdmin);
 console.log("adminControllers:", adminControllers);
@@ -140,28 +173,32 @@ console.log("typeof loginAdmin:", typeof adminControllers.loginAdmin);
 
 // customer routes
 const customerControllers = require("./controllers/customer.controller");
+console.log("customerControllers:", customerControllers);
 app.post("/customerSignUp", customerControllers.createCustomer);
 app.get("/getCustomers", customerControllers.getCustomers);
 app.get("/getCustomer/:name", customerControllers.getCustomer);
 app.put("/updateCustomer/:name", customerControllers.updateCustomer);
-app.delete("/deleteCustomer/:name", customerControllers.deleteCustomer);
+app.delete("/deleteCustomer/:id", customerControllers.deleteCustomer);
 
 //request route
 const requestControllers = require("./controllers/request.controllers");
 app.post("/api/request-service", auth, requestControllers.createRequest);
 app.get("/api/my-requests", auth, requestControllers.getRequestsByUser);
 app.get("/api/requests", auth, requestControllers.getRequests);
+console.log("requestControllers:", requestControllers);
 
 //technicians route
 const technicianController = require("./controllers/technicians.controllers");
+console.log("technicianController:", technicianController);
 app.post("/technicianSignUp", technicianController.createTechnician);
 app.get("/getTechnicians", technicianController.getTechnicians);
 app.get("/getTechnician/:name", technicianController.getTechnician);
 app.put("/updateTechnicians/:name", technicianController.updateTechnician);
-app.delete("/deleteTechnicians/:name", technicianController.deleteTechnician);
+app.delete("/deleteTechnician/:id", technicianController.deleteTechnician);
 
 // job routes
 const jobControllers = require("./controllers/jobs.controllers");
+console.log("jobControllers:", jobControllers);
 app.post("/createJob", auth, jobControllers.createJob);
 app.get("api/getJob", auth, jobControllers.getJob);
 app.get("/api/getAllJobs", auth, jobControllers.getAllJobs);
@@ -169,26 +206,41 @@ app.get("/api/jobs/technician/:id", auth, jobControllers.getJobsByTechnician);
 
 //mpesa route
 const mpesaController = require("./controllers/mpesa.controller");
+console.log("mpesaController:", mpesaController);
 app.post("/stkpush", mpesaController.stkPush);
 app.post("/api/mpesa/callback", mpesaController.stkCallback);
 
-// service routes
+//service controllers
 const serviceControllers = require("./controllers/service.controller.js");
-app.post('/api/service', serviceControllers.createService);
-app.get('/api/getServices', serviceControllers.getServices);
+console.log("serviceControllers:", serviceControllers);
+app.post("/api/service", serviceControllers.createService);
+app.get("/api/getServices", serviceControllers.getServices);
 
 //announcement routes
-const announcementControllers =  require('./controllers/announcement.controllers.js');
-app.post('/api/createAnnouncement', announcementControllers.createAnnouncement);
-app.get('/api/getAnnouncements', announcementControllers.getAnnouncements);
-app.put('/api/updateAnnouncement/:id', announcementControllers.updateAnnouncement);
-app.delete('/api/deleteAnnouncement/:id', announcementControllers.deleteAnnouncement);
+const announcementControllers = require("./controllers/announcement.controllers.js");
+console.log("announcementControllers:", announcementControllers);
+app.post("/api/createAnnouncement", announcementControllers.createAnnouncement);
+app.get("/api/getAnnouncements", announcementControllers.getAnnouncements);
+app.put(
+  "/api/updateAnnouncement/:id",
+  announcementControllers.updateAnnouncement
+);
+app.delete(
+  "/api/deleteAnnouncement/:id",
+  announcementControllers.deleteAnnouncement
+);
 
-// Serve static files from the "uploads" directory
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));   
+const feedbackControllers = require("./controllers/feedback.controller.js");
+console.log("feedbackControllers:", feedbackControllers);
+app.post("/api/feedback", feedbackControllers.createFeedback);
+app.get("/api/feedbacks", feedbackControllers.getFeedbacks);
 
-//app
+
+
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("Server running on port ${PORT}");
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

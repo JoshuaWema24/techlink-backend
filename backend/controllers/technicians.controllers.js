@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const express = require("express");
 
 // Create technician
-exports.createTechnician = async (req, res) => {
+exports.createTechnician = async (req, res, io) => {
   try {
     const {
       name,
@@ -17,7 +17,7 @@ exports.createTechnician = async (req, res) => {
       password,
       jobtype,
     } = req.body;
-
+   // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newTechnician = new Technician({
@@ -33,14 +33,27 @@ exports.createTechnician = async (req, res) => {
     });
 
     const savedTechnician = await newTechnician.save();
-    res.status(201).json(savedTechnician);
+
+    // Emit event to connected clients
+    if (io) io.emit("technicianAdded", savedTechnician);
+
+    res.status(201).json({
+      message: "Technician created successfully",
+      technician: savedTechnician,
+    });
   } catch (error) {
-    res.status(400).json({ message: "Error creating technician", error });
+    console.error("Error creating technician:", error);
+
+    // Handle other types of errors
+    res.status(500).json({
+      message: "Error creating technician",
+      error: error.message || "Unknown error occurred",
+    });
   }
 };
 
 // Get all technicians
-exports.getTechnicians = async (req, res) => {
+exports.getTechnicians = async (req, res, io) => {
   try {
     const technicians = await Technician.find();
     if (!technicians.length) {
@@ -48,12 +61,13 @@ exports.getTechnicians = async (req, res) => {
     }
     res.status(200).json(technicians);
   } catch (error) {
+    console.error("Error fetching technicians:", error);
     res.status(400).json({ message: "Error fetching technicians", error });
   }
 };
 
 // Get technician by name
-exports.getTechnician = async (req, res) => {
+exports.getTechnician = async (req, res, io) => {
   try {
     const { name } = req.params;
     const technician = await Technician.findOne({ name });
@@ -62,12 +76,13 @@ exports.getTechnician = async (req, res) => {
     }
     res.status(200).json(technician);
   } catch (error) {
+    console.error("Error fetching technician:", error);
     res.status(400).json({ message: "Error fetching technician", error });
   }
 };
 
 // Update technician by name
-exports.updateTechnician = async (req, res) => {
+exports.updateTechnician = async (req, res, io) => {
   try {
     const { name } = req.params;
     const updateData = { ...req.body };
@@ -84,22 +99,33 @@ exports.updateTechnician = async (req, res) => {
       return res.status(404).json({ message: "Technician not found" });
     }
 
+    // 🔔 Emit update event
+    if (io) io.emit("technicianUpdated", updated);
+
     res.status(200).json(updated);
   } catch (error) {
+    console.error("Error updating technician:", error);
     res.status(400).json({ message: "Error updating technician", error });
   }
 };
 
 // Delete technician
-exports.deleteTechnician = async (req, res) => {
+exports.deleteTechnician = async (req, res, io) => {
   try {
-    const { name } = req.params;
-    const deleted = await Technician.findOneAndDelete({ name });
-    if (!deleted) {
+    const { id } = req.params;
+
+    const deletedTechnician = await Technician.findByIdAndDelete(id);
+
+    if (!deletedTechnician) {
       return res.status(404).json({ message: "Technician not found" });
     }
+
+    // 🔔 Emit delete event
+    if (io) io.emit("technicianDeleted", { id });
+
     res.status(200).json({ message: "Technician deleted successfully" });
   } catch (error) {
-    res.status(400).json({ message: "Error deleting technician", error });
+    console.error("Error deleting technician:", error);
+    res.status(500).json({ message: "Error deleting technician", error });
   }
 };
