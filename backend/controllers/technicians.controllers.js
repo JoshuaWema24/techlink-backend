@@ -17,7 +17,7 @@ exports.createTechnician = async (req, res, io) => {
       password,
       jobtype,
     } = req.body;
-   // Hash password
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newTechnician = new Technician({
@@ -127,5 +127,31 @@ exports.deleteTechnician = async (req, res, io) => {
   } catch (error) {
     console.error("Error deleting technician:", error);
     res.status(500).json({ message: "Error deleting technician", error });
+  }
+};
+
+// Get technician by ID
+exports.getTechnicianByID = async (req, res, io) => {
+  try {
+    const { id } = req.params;
+
+   
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid technician ID format" });
+    }
+
+    const technician = await Technician.findById(id);
+
+    if (!technician) {
+      return res.status(404).json({ message: "Technician not found" });
+    }
+
+    res.status(200).json(technician);
+  } catch (error) {
+    console.error("Error fetching technician by ID:", error);
+    res.status(500).json({
+      message: "Error fetching technician by ID",
+      error: error.message || "Unknown error occurred",
+    });
   }
 };
