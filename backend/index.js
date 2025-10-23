@@ -208,6 +208,8 @@ app.get("/getTechnicians", technicianController.getTechnicians);
 app.get("/getTechnician/:name", technicianController.getTechnician);
 app.put("/updateTechnicians/:name", technicianController.updateTechnician);
 app.delete("/deleteTechnician/:id", technicianController.deleteTechnician);
+app.get("/api/technicians/:id", technicianController.getTechnicianByID);
+
 
 // Job routes
 const jobControllers = require("./controllers/jobs.controllers");
