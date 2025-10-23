@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Job = require("../models/jobs.model");
 const Technician = require("../models/technicians.model");
 
+
 // ===== CREATE JOB =====
 exports.createJob = async (req, res) => {
   try {
@@ -35,11 +36,24 @@ exports.createJob = async (req, res) => {
     });
 
     const savedJob = await newJob.save();
+
+    // Access socket.io and technician sockets
+    const io = req.app.get("io");
+    const technicianSockets = req.app.get("technicianSockets");
+
+    // Emit event only to the assigned technician
+    const socketId = technicianSockets.get(technician._id.toString());
+    if (socketId) {
+      io.to(socketId).emit("new-job", savedJob);
+      console.log(`✅ Job emitted to technician ${technician.name} (${socketId})`);
+    } else {
+      console.log(`⚠️ Technician ${technician.name} not connected.`);
+    }
+
     res.status(201).json({
       message: "Job assigned successfully!",
       job: savedJob,
     });
-    io.emit("new-job", savedJob); // Emit job creation event
   } catch (error) {
     console.error("Error creating job:", error);
     res.status(500).json({ message: "Server Error" });
@@ -52,16 +66,11 @@ exports.getJob = async (req, res) => {
     const jobId = req.params.id;
     const job = await Job.findById(jobId);
 
-    if (!job) {
-      return res.status(404).json({ message: "Job not found." });
-    }
-
+    if (!job) return res.status(404).json({ message: "Job not found." });
     res.status(200).json(job);
   } catch (error) {
     console.error("Server error while fetching job:", error);
-    res
-      .status(500)
-      .json({ message: "Server error. Could not retrieve job details." });
+    res.status(500).json({ message: "Server error. Could not retrieve job details." });
   }
 };
 
@@ -80,15 +89,13 @@ exports.getAllJobs = async (req, res) => {
 exports.getJobsByTechnician = async (req, res) => {
   try {
     const technicianId = req.user.id; // from JWT
-
     const jobs = await Job.find({ technicianId });
 
     if (!jobs || jobs.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No jobs found for this technician." });
+      return res.status(404).json({ message: "No jobs found for this technician." });
     }
-      res.status(200).json(jobs);
+
+    res.status(200).json(jobs);
   } catch (error) {
     console.error("Error while fetching technician's jobs:", error);
     res.status(500).json({ message: "Server error. Could not retrieve jobs." });
@@ -114,9 +121,15 @@ exports.updateJob = async (req, res) => {
       return res.status(404).json({ message: "Job not found." });
     }
 
-    // Emit job update event
+    // Notify technician of job updates
     const io = req.app.get("io");
-    io.emit("jobUpdated", updatedJob);
+    const technicianSockets = req.app.get("technicianSockets");
+    const socketId = technicianSockets.get(updatedJob.technicianId);
+
+    if (socketId) {
+      io.to(socketId).emit("jobUpdated", updatedJob);
+      console.log(`🔄 Job update sent to technician (${socketId})`);
+    }
 
     res.status(200).json({
       message: "Job updated successfully!",

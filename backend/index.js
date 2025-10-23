@@ -12,7 +12,7 @@ const path = require("path");
 const http = require("http");
 const socketIo = require("socket.io");
 
-// Create server and attach Socket.IO
+// ===== Create HTTP server and attach Socket.IO =====
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
@@ -20,29 +20,51 @@ const io = socketIo(server, {
       "https://techlink-website.vercel.app",
       "https://developer.safaricom.co.ke",
       "https://biz-link-admin.vercel.app",
-      "http://localhost:3000", // allow local testing
+      "http://localhost:3000", // local dev
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
 
-// Socket.IO connection
+// ===== Map to track technician socket connections =====
+const technicianSockets = new Map();
+
+// ===== Socket.IO connection handling =====
 io.on("connection", (socket) => {
   console.log("Technician connected:", socket.id);
 
+  // Technician registers their ID after connecting
+  socket.on("register", (technicianId) => {
+    technicianSockets.set(technicianId, socket.id);
+    console.log(
+      `✅ Technician ${technicianId} registered with socket ${socket.id}`
+    );
+  });
+
+  // Optional chat handler
   socket.on("send_message", (data) => {
-    console.log("Message received:", data);
+    console.log("📨 Message received:", data);
     io.emit("receive_message", data);
   });
 
+  // Handle disconnect
   socket.on("disconnect", () => {
-    console.log("Technician disconnected:", socket.id);
+    for (const [techId, sockId] of technicianSockets.entries()) {
+      if (sockId === socket.id) {
+        technicianSockets.delete(techId);
+        console.log(`❌ Technician ${techId} disconnected`);
+        break;
+      }
+    }
   });
 });
 
-// Make io accessible in routes
+// Make io and technicianSockets accessible to all controllers
 app.set("io", io);
+app.set("technicianSockets", technicianSockets);
 
+// ===== Middleware =====
 app.use(
   cors({
     origin: [
@@ -58,7 +80,7 @@ app.use(
 
 app.use(express.json());
 
-// MongoDB connection
+// ===== MongoDB Connection =====
 const uri =
   "mongodb+srv://wotiajoshua:joshuawema@cluster0.quv4pzg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
@@ -69,13 +91,14 @@ const clientOptions = {
 async function run() {
   try {
     await mongoose.connect(uri, clientOptions);
-    console.log("Connected to MongoDB Atlas successfully.");
+    console.log("✅ Connected to MongoDB Atlas successfully.");
   } catch (error) {
-    console.error("MongoDB connection error:", error);
+    console.error("❌ MongoDB connection error:", error);
   }
 }
 run();
 
+// ===== AUTH: LOGIN =====
 app.post("/login", async (req, res) => {
   const { email, password, role } = req.body;
 
@@ -107,16 +130,13 @@ app.post("/login", async (req, res) => {
   }
 });
 
-//=====profile section=====///
-
-// Image storage setup
+// ===== PROFILE SECTION =====
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
 });
 const upload = multer({ storage });
 
-// GET /profile
 app.get("/profile", auth, async (req, res) => {
   const { id, role } = req.user;
   const Model = role === "customer" ? Customer : Technician;
@@ -130,7 +150,6 @@ app.get("/profile", auth, async (req, res) => {
   }
 });
 
-// POST /profile/update
 app.post(
   "/profile/update",
   auth,
@@ -161,64 +180,54 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
-//admin routes
+// ===== ROUTES =====
+
+// Admin routes
 const adminControllers = require("./controllers/admin.controller.js");
-console.log("adminControllers:", adminControllers);
 app.post("/adminSignUp", adminControllers.createAdmin);
 app.post("/adminLogin", adminControllers.loginAdmin);
-console.log("adminControllers:", adminControllers);
-console.log("typeof createAdmin:", typeof adminControllers.createAdmin);
-console.log("typeof loginAdmin:", typeof adminControllers.loginAdmin);
 
-// customer routes
+// Customer routes
 const customerControllers = require("./controllers/customer.controller");
-console.log("customerControllers:", customerControllers);
 app.post("/customerSignUp", customerControllers.createCustomer);
 app.get("/getCustomers", customerControllers.getCustomers);
 app.get("/getCustomer/:name", customerControllers.getCustomer);
 app.put("/updateCustomer/:name", customerControllers.updateCustomer);
 app.delete("/deleteCustomer/:id", customerControllers.deleteCustomer);
 
-//request route
+// Request routes
 const requestControllers = require("./controllers/request.controllers");
 app.post("/api/request-service", auth, requestControllers.createRequest);
 app.get("/api/my-requests", auth, requestControllers.getRequestsByUser);
 app.get("/api/requests", auth, requestControllers.getRequests);
-console.log("requestControllers:", requestControllers);
 
-//technicians route
+// Technician routes
 const technicianController = require("./controllers/technicians.controllers");
-console.log("technicianController:", technicianController);
 app.post("/technicianSignUp", technicianController.createTechnician);
 app.get("/getTechnicians", technicianController.getTechnicians);
 app.get("/getTechnician/:name", technicianController.getTechnician);
 app.put("/updateTechnicians/:name", technicianController.updateTechnician);
 app.delete("/deleteTechnician/:id", technicianController.deleteTechnician);
 
-// job routes
+// Job routes
 const jobControllers = require("./controllers/jobs.controllers");
-console.log("jobControllers:", jobControllers);
 app.post("/createJob", auth, jobControllers.createJob);
-app.get("api/getJob", auth, jobControllers.getJob);
+app.get("/api/getJob/:id", auth, jobControllers.getJob);
 app.get("/api/getAllJobs", auth, jobControllers.getAllJobs);
 app.get("/api/jobs/technician/:id", auth, jobControllers.getJobsByTechnician);
 
-//mpesa route
+// M-Pesa routes
 const mpesaController = require("./controllers/mpesa.controller");
-console.log("mpesaController:", mpesaController);
 app.post("/stkpush", mpesaController.stkPush);
 app.post("/api/mpesa/callback", mpesaController.stkCallback);
 
-//service controllers
+// Service routes
 const serviceControllers = require("./controllers/service.controller.js");
-console.log("serviceControllers:", serviceControllers);
 app.post("/api/service", serviceControllers.createService);
 app.get("/api/getServices", serviceControllers.getServices);
 
-//announcement routes
+// Announcement routes
 const announcementControllers = require("./controllers/announcement.controllers.js");
-console.log("announcementControllers:", announcementControllers);
 app.post("/api/createAnnouncement", announcementControllers.createAnnouncement);
 app.get("/api/getAnnouncements", announcementControllers.getAnnouncements);
 app.put(
@@ -230,17 +239,16 @@ app.delete(
   announcementControllers.deleteAnnouncement
 );
 
+// Feedback routes
 const feedbackControllers = require("./controllers/feedback.controller.js");
-console.log("feedbackControllers:", feedbackControllers);
 app.post("/api/feedback", feedbackControllers.createFeedback);
 app.get("/api/feedbacks", feedbackControllers.getFeedbacks);
 
-
-
-
+// Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// ===== START SERVER =====
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
