@@ -20,13 +20,15 @@ exports.createRequest = async (req, res) => {
       location,
       time,
     } = req.body;
+    console.log("specificService received:", specificService);
+    console.log("request recieved:" , req.body);
+
 
     console.log("✅ Creating request for:", customerId);
     console.log("📝 Request body:", req.body);
 
     // ✅ Create new request
     const newRequest = new Request({
-      requestId: new mongoose.Types.ObjectId(),
       customerId,
       serviceType,
       specificService,
