@@ -6,7 +6,7 @@ const Request = require("../models/requests.model");
 exports.createRequest = async (req, res) => {
   try {
     const customerId = req.user.id; // from JWT
-    const { serviceType, urgency, description, location, time } = req.body;
+    const { serviceType, specificService, urgency, description, location, time } = req.body;
 
     console.log("Creating request for:", customerId);
     console.log("Request body:", req.body);
@@ -16,6 +16,7 @@ exports.createRequest = async (req, res) => {
       requestId: new mongoose.Types.ObjectId(),
       customerId,
       serviceType,
+      specificService,
       urgency,
       description,
       location,

@@ -15,6 +15,10 @@ const requestSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  specificService: {
+    type: String,
+    required: true,
+  },
   urgency: {
     type: String,
     required: true,

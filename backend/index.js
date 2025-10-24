@@ -218,10 +218,12 @@ app.get("/api/getJob/:id", auth, jobControllers.getJob);
 app.get("/api/getAllJobs", auth, jobControllers.getAllJobs);
 app.get("/api/jobs/technician/:id", auth, jobControllers.getJobsByTechnician);
 
-// M-Pesa routes
-const mpesaController = require("./controllers/mpesa.controller");
-app.post("/stkpush", mpesaController.stkPush);
-app.post("/api/mpesa/callback", mpesaController.stkCallback);
+const paymentController = require("./controllers/payments.controller");
+
+app.post("/api/payments/initiate", paymentController.initiatePayment);
+app.post("/api/payments/callback", paymentController.handleCallback);
+app.post("/api/payments/payout", paymentController.sendPayout);
+
 
 // Service routes
 const serviceControllers = require("./controllers/service.controller.js");
