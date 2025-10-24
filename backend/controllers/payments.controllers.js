@@ -4,7 +4,7 @@ const payment = require('../models/payment.model');
 const axios = require('axios');
 
 // controllers/payments.controller.js
-const axios = require("axios");
+
 
 exports.initiatePayment = async (req, res) => {
   const { phoneNumber, amount, orderId, customerName } = req.body;
