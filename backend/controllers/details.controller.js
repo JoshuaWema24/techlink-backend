@@ -1,9 +1,6 @@
 const Detail = require("../models/details.model");
 const mongoose = require("mongoose");
 
-
-// ✅ Create Detail (linked to customer)
-const Detail = require("../models/details.model");
 const Request = require("../models/request.model");
 
 exports.createDetails = async (req, res) => {
