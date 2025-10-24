@@ -1,7 +1,7 @@
 const Detail = require("../models/details.model");
 const mongoose = require("mongoose");
 
-const Request = require("../models/request.model");
+const Request = require(".../models/requests.model");
 
 exports.createDetails = async (req, res) => {
   try {
