@@ -4,14 +4,15 @@ const Request = require("../models/requests.model");
 
 exports.createRequest = async (req, res) => {
   try {
-    // ✅ Ensure user is attached from auth middleware
-    if (!req.user || !req.user.id) {
+    // Use JWT if available, otherwise fallback to frontend userId
+    const customerId = req.user?.id || req.body.userId;
+
+    if (!customerId) {
       return res
-        .status(401)
-        .json({ message: "Unauthorized: No user found in token" });
+        .status(400)
+        .json({ message: "Missing customerId (JWT or userId)" });
     }
 
-    const customerId = req.user.id;
     const {
       serviceType,
       specificService,
@@ -20,15 +21,13 @@ exports.createRequest = async (req, res) => {
       location,
       time,
     } = req.body;
-    console.log("specificService received:", specificService);
-    console.log("request recieved:" , req.body);
-
+console.log("specificService:", specificService);
 
     console.log("✅ Creating request for:", customerId);
     console.log("📝 Request body:", req.body);
 
-    // ✅ Create new request
     const newRequest = new Request({
+      requestId: new mongoose.Types.ObjectId(),
       customerId,
       serviceType,
       specificService,
@@ -38,23 +37,20 @@ exports.createRequest = async (req, res) => {
       time,
     });
 
-    // ✅ Save to database
     const savedRequest = await newRequest.save();
 
-    // ✅ Populate customer details (optional)
     const populatedRequest = await Request.findById(savedRequest._id).populate({
       path: "customerId",
       select: "name phonenumber",
     });
 
-    // ✅ Emit event to connected clients via Socket.IO
     const io = req.app.get("io");
-    if (io) io.emit("newRequest", populatedRequest);
+    io.emit("newRequest", populatedRequest);
 
     res.status(201).json(populatedRequest);
   } catch (error) {
     console.error("❌ Error creating request:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(400).json({ message: "Server error", error });
   }
 };
 
