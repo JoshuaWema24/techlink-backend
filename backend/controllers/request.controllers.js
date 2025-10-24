@@ -2,16 +2,29 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Request = require("../models/requests.model");
 
-// ===== CREATE REQUEST =====
 exports.createRequest = async (req, res) => {
   try {
-    const customerId = req.user.id; // from JWT
-    const { serviceType, specificService, urgency, description, location, time } = req.body;
+    // ✅ Ensure user is attached from auth middleware
+    if (!req.user || !req.user.id) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: No user found in token" });
+    }
 
-    console.log("Creating request for:", customerId);
-    console.log("Request body:", req.body);
+    const customerId = req.user.id;
+    const {
+      serviceType,
+      specificService,
+      urgency,
+      description,
+      location,
+      time,
+    } = req.body;
 
-    // Create new request
+    console.log("✅ Creating request for:", customerId);
+    console.log("📝 Request body:", req.body);
+
+    // ✅ Create new request
     const newRequest = new Request({
       requestId: new mongoose.Types.ObjectId(),
       customerId,
@@ -23,24 +36,23 @@ exports.createRequest = async (req, res) => {
       time,
     });
 
+    // ✅ Save to database
     const savedRequest = await newRequest.save();
 
-    // Populate customer name and phone
+    // ✅ Populate customer details (optional)
     const populatedRequest = await Request.findById(savedRequest._id).populate({
       path: "customerId",
       select: "name phonenumber",
     });
 
-    // Emit event to connected clients
+    // ✅ Emit event to connected clients via Socket.IO
     const io = req.app.get("io");
-    
-   io.emit("newRequest", populatedRequest);
-
+    if (io) io.emit("newRequest", populatedRequest);
 
     res.status(201).json(populatedRequest);
   } catch (error) {
-    console.error("Error creating request:", error);
-    res.status(400).json({ message: "Server error", error });
+    console.error("❌ Error creating request:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
