@@ -218,7 +218,7 @@ app.get("/api/getJob/:id", auth, jobControllers.getJob);
 app.get("/api/getAllJobs", auth, jobControllers.getAllJobs);
 app.get("/api/jobs/technician/:id", auth, jobControllers.getJobsByTechnician);
 
-const paymentController = require("./controllers/payments.controller");
+const paymentController = require("./controllers/payments.controllers.jsj");
 
 app.post("/api/payments/initiate", paymentController.initiatePayment);
 app.post("/api/payments/callback", paymentController.handleCallback);
