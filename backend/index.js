@@ -19,6 +19,7 @@ const io = socketIo(server, {
     origin: [
       "https://techlink-website.vercel.app",
       "https://developer.safaricom.co.ke",
+      "http://localhost:54687",
       "https://biz-link-admin.vercel.app",
       "http://localhost:3000", // local dev
     ],
