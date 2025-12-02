@@ -17,6 +17,7 @@ exports.createCustomer = async (req, res) => {
       estate,
       password,
     } = req.body;
+// something is wrong with the backend.
 
     console.log("Received customer data:", req.body);
 
