@@ -248,12 +248,12 @@ const feedbackControllers = require("./controllers/feedback.controller.js");
 app.post("/api/feedback", feedbackControllers.createFeedback);
 app.get("/api/feedbacks", feedbackControllers.getFeedbacks);
 
-const detailsControllers = require("./controllers/details.controller.js");
-app.post("/api/details", auth, detailsControllers.createDetail);
-app.get("/api/my-details", auth, detailsControllers.getMyDetails);
-app.get("/api/details/:id", auth, detailsControllers.getDetailById);
-app.put("/api/details/:id", auth, detailsControllers.updateDetail);
-app.delete("/api/details/:id", auth, detailsControllers.deleteDetail);
+//const detailsControllers = require("./controllers/details.controller.js");
+//app.post("/api/details", auth, detailsControllers.createDetail);
+//app.get("/api/my-details", auth, detailsControllers.getMyDetails);
+//app.get("/api/details/:id", auth, detailsControllers.getDetailById);
+//app.put("/api/details/:id", auth, detailsControllers.updateDetail);
+//app.delete("/api/details/:id", auth, detailsControllers.deleteDetail);
 
 // Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
