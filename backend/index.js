@@ -16,13 +16,7 @@ const socketIo = require("socket.io");
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: [
-      "https://techlink-website.vercel.app",
-      "https://developer.safaricom.co.ke",
-      "http://localhost:54687",
-      "https://biz-link-admin.vercel.app",
-      "http://localhost:3000", // local dev
-    ],
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   },
