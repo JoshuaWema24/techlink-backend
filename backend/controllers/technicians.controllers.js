@@ -35,7 +35,7 @@ exports.createTechnician = async (req, res, io) => {
     const savedTechnician = await newTechnician.save();
 
     // Emit event to connected clients
-    if (io) io.emit("technicianAdded", savedTechnician);
+    io.emit("technicianAdded", savedTechnician);
 
     res.status(201).json({
       message: "Technician created successfully",
