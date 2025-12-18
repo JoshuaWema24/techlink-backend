@@ -13,7 +13,6 @@ const technicianSchema = new mongoose.Schema({
   phonenumber: {
     type: String,
     required: true,
-    unique: true,
   },
 
   country: {
