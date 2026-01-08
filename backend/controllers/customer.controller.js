@@ -37,14 +37,6 @@ exports.createCustomer = async (req, res) => {
         .json({ message: "Please fill in all required fields." });
     }
 
-    // Check if customer already exists
-    const existingCustomer = await Customer.findOne({ email });
-    if (existingCustomer) {
-      return res
-        .status(409)
-        .json({ message: "Customer with this email already exists." });
-    }
-
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
