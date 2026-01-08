@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Technician = require("../models/technicians.model");
 const bcrypt = require("bcrypt");
 const express = require("express");
+const io = require("socket.io");
 
 // Create technician
 exports.createTechnician = async (req, res, io) => {
