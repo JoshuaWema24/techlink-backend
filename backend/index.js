@@ -125,40 +125,48 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// ===== PROFILE SECTION =====
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
-});
-const upload = multer({ storage });
-
-app.get("/profile", auth, async (req, res) => {
-  const { id, role } = req.user;
-  const Model = role === "customer" ? Customer : Technician;
-
+// GET logged-in CUSTOMER profile
+app.get("/customerProfile", auth, async (req, res) => {
   try {
-    const user = await Model.findById(id).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    const { id, role } = req.user;
+
+    // Allow only customers
+    if (role !== "customer") {
+      return res.status(403).json({
+        message: "Access denied. Customers only.",
+      });
+    }
+
+    const customer = await Customer.findById(id).select("-password");
+
+    if (!customer) {
+      return res.status(404).json({
+        message: "Customer not found",
+      });
+    }
+
+    res.status(200).json(customer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Server error",
+    });
   }
 });
+
+
+
+
 
 app.post(
   "/profile/update",
   auth,
-  upload.single("profilePicture"),
   async (req, res) => {
     const { id, role } = req.user;
     const Model = role === "customer" ? Customer : Technician;
 
     try {
       const updates = JSON.parse(req.body.profileData);
-      if (req.file) {
-        updates.profilePicture = `http://localhost:3000/uploads/${req.file.filename}`;
-      }
-
       const updatedUser = await Model.findByIdAndUpdate(id, updates, {
         new: true,
       }).select("-password");
